@@ -2,7 +2,7 @@ package main
 
 import (
 	"LearnGo/chatroom/common/message"
-	serverprocess "LearnGo/chatroom/server/process"
+	"LearnGo/chatroom/server/process"
 	"LearnGo/chatroom/server/utils"
 	"fmt"
 	"io"
@@ -16,10 +16,11 @@ type Processor struct {
 // 编写一个ServerProcessMess函数
 // 功能：根据客户端发送的消息种类不同，决定调用哪个函数来处理
 func (this *Processor) serverProcessMes(mes *message.Message) (err error) {
+	fmt.Println("mes=", mes)
 	switch mes.Type {
 	case message.LoginMesType:
 		//处理登录
-		up := &serverprocess.UserProcess{
+		up := &process2.UserProcess{
 			Conn: this.Conn,
 		}
 		err = up.ServerProcessLogin(mes)
@@ -28,10 +29,14 @@ func (this *Processor) serverProcessMes(mes *message.Message) (err error) {
 			return
 		}
 	case message.RegisterMesType:
-		up := &serverprocess.UserProcess{
+		up := &process2.UserProcess{
 			Conn: this.Conn,
 		}
 		err = up.ServerProcessRegister(mes)
+	case message.SmsMesType:
+		//创建一个SmsProcess实例完成转发群聊消息
+		smsProcess := process2.SmsProcess{}
+		smsProcess.SendGroupMes(mes)
 	//处理注册
 	default:
 		fmt.Println("消息类型不存在，无法处理...")

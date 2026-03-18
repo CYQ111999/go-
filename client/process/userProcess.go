@@ -137,12 +137,16 @@ func (this *UserProcess) Login(userId int, userPwd string, userName string) (err
 	}
 	if loginResMes.Code == 200 {
 		// 登录成功，保存连接
-		this.Conn = conn
-		this.Tf = tf
-		fmt.Println("\n========== 登录成功！ ==========")
-		// 启动消息接收goroutine
-		go this.keepReading()
+		//this.Conn = conn
+		//this.Tf = tf
+		//fmt.Println("\n========== 登录成功！ ==========")
+		//// 启动消息接收goroutine
+		//go this.keepReading()
 
+		//初始化CUrUser
+		CurUser.Conn = conn
+		CurUser.UserId = userId
+		CurUser.UserStatus = message.UserOnline
 		//可以显示当前在线用户的列表，遍历loginResMes.UsersId
 		fmt.Println("当前在线用户列表如下:")
 		for _, v := range loginResMes.UsersId {
@@ -151,6 +155,12 @@ func (this *UserProcess) Login(userId int, userPwd string, userName string) (err
 				continue
 			}
 			fmt.Println("用户id:\t", v)
+			//完成 客戶端的onlineUsers 完成初始化
+			user := &message.User{
+				UserId:     v,
+				UserStatus: message.UserOnline,
+			}
+			onlineUsers[v] = user
 		}
 		go serverProcessMes(conn)
 		// 显示菜单
@@ -166,7 +176,7 @@ func (this *UserProcess) Login(userId int, userPwd string, userName string) (err
 	return nil
 }
 
-// keepReading 持续读取服务器消息
+// 持续读取服务器消息
 func (this *UserProcess) keepReading() {
 	fmt.Println("启动消息接收goroutine...")
 	defer func() {
@@ -185,7 +195,7 @@ func (this *UserProcess) keepReading() {
 			fmt.Println("读取服务器消息失败:", err)
 			break
 		}
-		fmt.Printf("收到服务器消息: 类型=%d\n", mes.Type)
+		fmt.Printf("收到服务器消息: 类型=%s\n", mes.Type)
 		// 这里可以处理不同类型的服务器消息
 	}
 	fmt.Println("退出消息接收循环")

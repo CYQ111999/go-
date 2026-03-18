@@ -6,6 +6,7 @@ const (
 	RegisterMesType         = "RegisterMes"
 	RegisterResMesType      = "RegisterResMes"
 	NotifyUserStatusMesType = "NotifyUserStatusMes"
+	SmsMesType              = "SmsMes"
 )
 
 // 这里我们定义几个用户状态的常量
@@ -20,8 +21,9 @@ type Message struct {
 	Data string `json:"data"`
 }
 
+// ✅ 只改了这里：json:"userId"
 type LoginMes struct {
-	UserId   int    `json:"userId"`
+	UserId   int    `json:"userId"` // 改为小写
 	UserPwd  string `json:"userPwd"`
 	UserName string `json:"userName"`
 }
@@ -41,8 +43,14 @@ type RegisterResMes struct {
 	Error string `json:"error"` //返回错误信息
 }
 
-// NotifyUserStatusMes 为了配合服务器端推送用户状态变化消息通知
+// ✅ 只改了这里：json:"userId" 和 json:"status"
 type NotifyUserStatusMes struct {
-	UserId int `json:"UserId"`
-	Status int `json:"Status"` //用户状态
+	UserId int `json:"userId"` // 改为小写
+	Status int `json:"status"` // 改为小写
+}
+
+// SmsMes 增加一个SmsMes
+type SmsMes struct {
+	Content string `json:"content"` //内容
+	User           //匿名结构体，继承
 }
